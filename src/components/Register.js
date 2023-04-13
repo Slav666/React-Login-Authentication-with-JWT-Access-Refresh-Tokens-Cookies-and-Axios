@@ -1,8 +1,10 @@
+import axios from "../api/axios";
 import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const REGISTER_URL = "/register";
 
 const Register = () => {
   const userRef = useRef();
@@ -47,9 +49,34 @@ const Register = () => {
       setErrMsg("Invalid Entry");
       return;
     }
-    console.log(user, password);
-    setSuccess(true);
+    try {
+      const response = await axios.post(
+        REGISTER_URL,
+        JSON.stringify({ user, pwd: password }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      console.log(JSON.stringify(response?.data));
+      //console.log(JSON.stringify(response))
+      setSuccess(true);
+      //clear state and controlled inputs
+      setUser("");
+      setPassword("");
+      setMatchPassword("");
+    } catch (err) {
+      if (!err?.response) {
+        setErrMsg("No Server Response");
+      } else if (err.response?.status === 409) {
+        setErrMsg("Username Taken");
+      } else {
+        setErrMsg("Registration Failed");
+      }
+    }
   };
+
   return (
     <>
       {success ? (

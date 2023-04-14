@@ -1,6 +1,16 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import AuthContext from "../context/AuthProvider";
 
 const Home = () => {
+  const { setAuth } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    setAuth({});
+    navigate("/linkpage");
+  };
+
   return (
     <section>
       <h1>Home</h1>
@@ -15,7 +25,7 @@ const Home = () => {
       <br />
       <Link to="/linkpage">Go to the link page</Link>
       <div>
-        <button>Sign Out</button>
+        <button onClick={logout}>Sign Out</button>
       </div>
     </section>
   );
